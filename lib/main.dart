@@ -1,233 +1,131 @@
-
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase/student_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-import 'firebase_options.dart';
+import 'screens/login_screen.dart';
+import 'screens/main_shell.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  runApp(const MyApp());
+  runApp(const BloxboxdApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// ==========================================
+// APP ENTRY POINT & SAFE FIREBASE LOADER
+// ==========================================
+class BloxboxdApp extends StatelessWidget {
+  const BloxboxdApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Bloxboxd',
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Firebase App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255,120,155,120),
-        ),
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF4F7FC),
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF14181C),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF00E054), // Letterboxd Green
+          secondary: Color(0xFF40BCF4), // Letterboxd Blue
+          tertiary: Color(0xFFFF8000), // Letterboxd Orange
+          surface: Color(0xFF1F262E),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF14181C),
+          elevation: 0,
+          centerTitle: false,
+          titleTextStyle: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
+        ),
+        cardTheme: CardThemeData(
+          color: const Color(0xFF1F262E),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: Colors.white.withOpacity(0.08)),
+          ),
+        ),
       ),
-      home: const FirebaseHomePage(),
+      home: const FirebaseInitializer(),
     );
   }
 }
 
-class FirebaseHomePage extends StatelessWidget {
-  const FirebaseHomePage({super.key});
+// Safely initializes Firebase without crashing or showing a blank screen
+class FirebaseInitializer extends StatelessWidget {
+  const FirebaseInitializer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255,120,155,120),
-        foregroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Flutter Firebase',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 21,
-          ),
-        ),
-      ),
+    final initialization = Firebase.apps.isNotEmpty
+        ? Future.value(Firebase.app())
+        : Firebase.initializeApp(
+            options: const FirebaseOptions(
+              apiKey: "AIzaSyDXN_8-pxP97BG00yy3cDmRzKHdA4zBY1I",
+              authDomain: "flutter-finals-725ed.firebaseapp.com",
+              projectId: "flutter-finals-725ed",
+              storageBucket: "flutter-finals-725ed.firebasestorage.app",
+              messagingSenderId: "784142585461",
+              appId: "1:784142585461:web:3ac4a9633d49893df3f23c",
+              measurementId: "G-GEXKQKX6NQ",
+            ),
+          );
 
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-
-              const SizedBox(height: 30),
-
-              // Firebase Icon
-              Container(
-                height: 140,
-                width: 140,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE0EDFF),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.blue.withOpacity(0.12),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.cloud_done_rounded,
-                  size: 85,
-                  color: Color.fromARGB(255,120,155,120),
-                ),
-              ),
-
-              const SizedBox(height: 30),
-
-              const Text(
-                'Welcome!',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E293B),
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              const Text(
-                'Your Firebase application is ready.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.grey,
-                ),
-              ),
-
-              const SizedBox(height: 35),
-
-              // Connection Status Card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255,120,155,120).withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.check_circle,
-                        color: Color.fromARGB(255,120,155,120),
-                        size: 30,
-                      ),
-                    ),
-
-                    const SizedBox(width: 15),
-
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Firebase Connected',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1E293B),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            'Firebase connected successfully!',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 30),
-
-              // Create Student Button
-              SizedBox(
-                width: double.infinity,
-                height: 58,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => StudentPage(),
-                      ),
-                    );
-                  },
-
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:  const Color.fromARGB(255,120,155,120),
-                    foregroundColor: Colors.white,
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.person_add_alt_1, size: 22),
-                      SizedBox(width: 10),
-                      Text(
-                        'Create Student',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+    return FutureBuilder(
+      future: initialization,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            return Scaffold(
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Text(
+                    'Firebase Init Error:\n${snapshot.error}',
+                    style: const TextStyle(color: Colors.redAccent, fontSize: 16),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
-
-              const SizedBox(height: 20),
-
-              const Text(
-                'Student Management System',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
-              ),
-
-              const SizedBox(height: 20),
-            ],
+            );
+          }
+          return const AuthWrapper();
+        }
+        // Shows a neat loading indicator while Firebase wakes up
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(color: Color(0xFF00E054)),
           ),
-        ),
-      ),
+        );
+      },
+    );
+  }
+}
+
+// ==========================================
+// AUTH WRAPPER (Restricts protected screens)
+// ==========================================
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator(color: Color(0xFF00E054))),
+          );
+        }
+        if (snapshot.hasData && snapshot.data != null) {
+          return const MainShell();
+        }
+        return const LoginScreen();
+      },
     );
   }
 }
